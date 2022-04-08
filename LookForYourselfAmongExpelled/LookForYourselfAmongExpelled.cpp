@@ -15,7 +15,7 @@ struct Student
 };
 
 Student::Student()
-	:id(-1), fullName ("")
+	:id(0), fullName ("")
 {
 }
 
@@ -31,23 +31,22 @@ Student::~Student()
 class University
 {
 public:
-	University(int amount);
+	University();
 	~University();
 
 	Student GetStudent(int index) const;
-	void SetStudent(const Student& student, int index);
+	void SetStudent(const Student& student);
 
 	void ExportFile(const char* path) const;
-	void ImportFile(const char* path) const;
+	void ImportFile(const Student& student, const char* path);
 
 
 private:
-	int m_amount;
 	std::vector<Student> m_students;
 };
 
-University::University(int amount)
-	:m_amount(amount), m_students(std::vector<Student>(amount))
+University::University()
+	:m_students(std::vector<Student>())
 {
 }
 
@@ -60,15 +59,38 @@ Student University::GetStudent(int index) const
 	return m_students[index];
 }
 
-void University::SetStudent(const Student& student, int index)
+void University::SetStudent(const Student& student)
 {
-	m_students[index].id = student.id;
-	m_students[index].fullName = student.fullName;
+	m_students.push_back(student);
 }
 
-void University::ImportFile(const char* path) const
+void University::ImportFile(const Student& student, const char* path)
 {
-	/// TO DO: Import lol via lambda expressions
+	std::string str;
+
+	int id{0};
+	std::string fullName;
+
+	std::ifstream file;
+	file.open(path, std::ios::in);
+
+	if (!file.is_open())
+	{
+		std::cout << "Файл не может быть открыт/создан!\n";
+		return;
+	}
+
+	while (std::getline(file, str))
+	{
+		std::getline(file, str);
+		id = std::stoi(str);
+
+		std::getline(file, fullName);
+
+		SetStudent(Student(id, fullName));
+	}
+
+	file.close();
 }
 
 void University::ExportFile(const char* path) const
@@ -97,7 +119,9 @@ int main()
 	ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
 	SendMessage(GetConsoleWindow(), WM_SYSKEYDOWN, VK_RETURN, 0x20000000);
 
-	University university(0);
+	University university;
+
+	university.ImportFile(Student(), "../import.txt");
 
 	university.ExportFile("../data.txt");
 
