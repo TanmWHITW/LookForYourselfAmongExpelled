@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <Windows.h>
 #include <vector>
+#include <string>
 #include <fstream>
 
 struct Student
@@ -34,9 +35,11 @@ public:
 	~University();
 
 	Student GetStudent(int index) const;
-	void SetStudent(const Student& student);
+	void SetStudent(const Student& student, int index);
 
 	void ExportFile(const char* path) const;
+	void ImportFile(const char* path) const;
+
 
 private:
 	int m_amount;
@@ -57,9 +60,15 @@ Student University::GetStudent(int index) const
 	return m_students[index];
 }
 
-void University::SetStudent(const Student& student)
+void University::SetStudent(const Student& student, int index)
 {
-	m_students.push_back(student);
+	m_students[index].id = student.id;
+	m_students[index].fullName = student.fullName;
+}
+
+void University::ImportFile(const char* path) const
+{
+	/// TO DO: Import lol via lambda expressions
 }
 
 void University::ExportFile(const char* path) const
@@ -76,6 +85,7 @@ void University::ExportFile(const char* path) const
 	file << m_students.size();
 
 	std::cout << "\nФайл создан!";
+	file.close();
 }
 
 int main()
@@ -89,7 +99,7 @@ int main()
 
 	University university(0);
 
-	university.ExportFile("../lol.txt");
+	university.ExportFile("../data.txt");
 
 	Sleep(5000);
 	system("cls");
